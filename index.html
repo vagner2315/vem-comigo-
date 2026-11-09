@@ -1,2 +1,241 @@
 # vem comigo 
 Aplicativo de transporte de passageiros, com carros e motos, começando por Cachoeirinha - RS.
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101820">
+<title>Vem Comigo</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Arial,sans-serif;
+ background:#101820;color:white;
+}
+header{
+ padding:25px 20px;text-align:center;
+ background:#182630;border-bottom:3px solid #f5b800;
+}
+.logo{font-size:32px;font-weight:bold;color:#f5b800}
+header p{color:#d0d7dc}
+main{max-width:520px;margin:auto;padding:20px}
+.card{
+ background:#1d2c37;padding:22px;
+ border-radius:18px;margin-bottom:18px;
+}
+h2{margin-top:0;color:#f5b800}
+label{display:block;margin:14px 0 7px}
+input,select{
+ width:100%;padding:14px;border:0;
+ border-radius:9px;font-size:16px;
+ background:#fff;color:#182630;
+}
+button{
+ width:100%;padding:15px;border:0;
+ border-radius:10px;background:#f5b800;
+ color:#101820;font-weight:bold;font-size:17px;
+ margin-top:15px;cursor:pointer;
+}
+button.secondary{background:#344955;color:white}
+.options{display:flex;gap:10px}
+.options button{flex:1}
+.result{
+ padding:16px;background:#263c48;
+ border-radius:10px;margin-top:15px;
+}
+.price{font-size:28px;color:#f5b800;font-weight:bold}
+small{color:#c5d0d6;line-height:1.5}
+footer{text-align:center;padding:25px;color:#aebbc3}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">🚗 VEM COMIGO 🏍️</div>
+ <p>Sua cidade, seu caminho, sua viagem!</p>
+ <small>Começando por Cachoeirinha - RS</small>
+</header>
+
+<main>
+ <section class="card">
+  <h2>Bem-vindo!</h2>
+  <p>O que você deseja fazer?</p>
+  <div class="options">
+   <button onclick="mostrar('passageiro')">Sou passageiro</button>
+   <button class="secondary" onclick="mostrar('motorista')">Sou motorista</button>
+  </div>
+ </section>
+
+ <section id="passageiro" class="card hidden">
+  <h2>Solicitar viagem</h2>
+
+  <label>Tipo de transporte</label>
+  <select id="veiculo" onchange="calcular()">
+   <option value="carro">🚗 Carro</option>
+   <option value="moto">🏍️ Moto</option>
+  </select>
+
+  <label>Seu nome</label>
+  <input id="nome" placeholder="Digite seu nome">
+
+  <label>Telefone com DDD</label>
+  <input id="telefone" type="tel" placeholder="(51) 99999-9999">
+
+  <label>Local de partida</label>
+  <input id="origem" placeholder="Onde você está?">
+
+  <label>Destino</label>
+  <input id="destino" placeholder="Para onde deseja ir?">
+
+  <label>Distância estimada em km</label>
+  <input id="distancia" type="number" min="1" placeholder="Exemplo: 5" oninput="calcular()">
+
+  <div class="result">
+   <small>Estimativa demonstrativa da viagem</small>
+   <div class="price" id="preco">R$ 0,00</div>
+   <small>O valor real deverá ser confirmado antes da viagem.</small>
+  </div>
+
+  <button onclick="solicitar()">Solicitar pelo WhatsApp</button>
+  <button class="secondary" onclick="copiarPedido()">Copiar pedido</button>
+ </section>
+
+ <section id="motorista" class="card hidden">
+  <h2>Área do motorista</h2>
+  <p>Faça seu cadastro para demonstrar interesse em trabalhar conosco.</p>
+
+  <label>Nome completo</label>
+  <input id="motoristaNome" placeholder="Seu nome">
+
+  <label>Telefone</label>
+  <input id="motoristaTelefone" placeholder="Seu WhatsApp">
+
+  <label>Tipo de veículo</label>
+  <select id="motoristaVeiculo">
+   <option>Carro</option>
+   <option>Moto</option>
+  </select>
+
+  <label>Modelo do veículo</label>
+  <input id="modelo" placeholder="Exemplo: Fiat Uno">
+
+  <label>Ano do veículo</label>
+  <input id="ano" type="number" placeholder="Exemplo: 2018">
+
+  <button onclick="cadastrarMotorista()">Enviar interesse pelo WhatsApp</button>
+  <small>Este cadastro é demonstrativo. A aprovação e a documentação serão verificadas posteriormente.</small>
+ </section>
+
+ <section class="card">
+  <h2>Sobre o Vem Comigo</h2>
+  <p>Uma nova opção de mobilidade para Cachoeirinha e região.</p>
+  <p>🚗 Viagens de carro</p>
+  <p>🏍️ Viagens de moto</p>
+  <p>📍 Mobilidade para todos</p>
+ </section>
+</main>
+
+<footer>
+ Vem Comigo © 2026<br>
+ Cachoeirinha - Rio Grande do Sul
+</footer>
+
+<script>
+let pedidoAtual = "";
+
+function mostrar(tela){
+ document.getElementById("passageiro").classList.add("hidden");
+ document.getElementById("motorista").classList.add("hidden");
+ document.getElementById(tela).classList.remove("hidden");
+ document.getElementById(tela).scrollIntoView({behavior:"smooth"});
+}
+
+function calcular(){
+ const km = Number(document.getElementById("distancia").value);
+ const tipo = document.getElementById("veiculo").value;
+ const valor = tipo === "carro" ? 5 + km*2 : 4 + km*1.4;
+ document.getElementById("preco").textContent =
+ km > 0 ? valor.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}) : "R$ 0,00";
+ return valor;
+}
+
+function solicitar(){
+ const nome=document.getElementById("nome").value.trim();
+ const telefone=document.getElementById("telefone").value.trim();
+ const origem=document.getElementById("origem").value.trim();
+ const destino=document.getElementById("destino").value.trim();
+ const km=Number(document.getElementById("distancia").value);
+ const veiculo=document.getElementById("veiculo").value;
+
+ if(!nome||!telefone||!origem||!destino||km<=0){
+  alert("Preencha todos os campos e informe uma distância válida.");
+  return;
+ }
+
+ const valor=calcular();
+ pedidoAtual =
+ "Olá! Quero solicitar uma viagem pelo Vem Comigo.\n"+
+ "Nome: "+nome+"\nTelefone: "+telefone+
+ "\nVeículo: "+veiculo+"\nPartida: "+origem+
+ "\nDestino: "+destino+"\nDistância estimada: "+km+
+ " km\nEstimativa demonstrativa: R$ "+valor.toFixed(2);
+
+ abrirWhatsApp(pedidoAtual);
+}
+
+function cadastrarMotorista(){
+ const nome=document.getElementById("motoristaNome").value.trim();
+ const telefone=document.getElementById("motoristaTelefone").value.trim();
+ const veiculo=document.getElementById("motoristaVeiculo").value;
+ const modelo=document.getElementById("modelo").value.trim();
+ const ano=document.getElementById("ano").value;
+
+ if(!nome||!telefone||!modelo||!ano){
+  alert("Preencha todos os campos.");
+  return;
+ }
+
+ const mensagem="Olá! Tenho interesse em ser motorista do Vem Comigo.\n"+
+ "Nome: "+nome+"\nTelefone: "+telefone+
+ "\nVeículo: "+veiculo+"\nModelo: "+modelo+"\nAno: "+ano;
+ abrirWhatsApp(mensagem);
+}
+
+function abrirWhatsApp(mensagem){
+ // Configure aqui o WhatsApp oficial do Vem Comigo.
+ const numero="5511999999999";
+ if(numero==="5511999999999"){
+  pedidoAtual=mensagem;
+  alert("O aplicativo está pronto para teste. Para enviar pedidos, configure o número oficial do WhatsApp no código.");
+  copiarPedido();
+  return;
+ }
+ window.open("https://wa.me/"+numero+"?text="+encodeURIComponent(mensagem),"_blank");
+}
+
+function copiarPedido(){
+ const texto=pedidoAtual;
+ if(!texto){
+  alert("Preencha os dados primeiro.");
+  return;
+ }
+ if(navigator.clipboard && window.isSecureContext){
+  navigator.clipboard.writeText(texto)
+   .then(()=>alert("Pedido copiado!"))
+   .catch(()=>alert("Não foi possível copiar. Tente novamente."));
+ }else{
+  const area=document.createElement("textarea");
+  area.value=texto;
+  document.body.appendChild(area);
+  area.select();
+  document.execCommand("copy");
+  area.remove();
+  alert("Pedido copiado!");
+ }
+}
+</script>
+</body>
+</html>
