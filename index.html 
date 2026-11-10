@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vem Comigo</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#101820;
+  color:white;
+}
+header {
+  background:#00a86b;
+  padding:20px;
+  text-align:center;
+}
+header h1 {margin:0;font-size:28px}
+header p {margin:6px 0 0}
+main {padding:18px;max-width:600px;margin:auto}
+.card {
+  background:#1d2935;
+  padding:18px;
+  border-radius:14px;
+  margin-bottom:15px;
+}
+h2 {margin-top:0}
+select,input,button {
+  width:100%;
+  padding:14px;
+  margin:8px 0;
+  border:0;
+  border-radius:9px;
+  font-size:16px;
+}
+button {
+  background:#00c77b;
+  color:#071b13;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:disabled {opacity:.5}
+#map {
+  height:300px;
+  border-radius:12px;
+  margin-top:12px;
+}
+#status {color:#8fffc7;font-size:14px}
+footer {
+  text-align:center;
+  padding:20px;
+  color:#aaa;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🚘 VEM COMIGO</h1>
+  <p>Sua viagem começa aqui!</p>
+</header>
+
+<main>
+
+<div class="card">
+  <h2>Bem-vindo!</h2>
+  <label>Você é:</label>
+  <select id="tipo">
+    <option value="Passageiro">Passageiro</option>
+    <option value="Motorista">Motorista</option>
+  </select>
+
+  <label>Escolha seu veículo:</label>
+  <select id="veiculo">
+    <option>Carro</option>
+    <option>Moto</option>
+  </select>
+</div>
+
+<div class="card">
+  <h2>📍 Sua localização</h2>
+  <button onclick="localizar()">Encontrar minha localização</button>
+  <p id="origem">Aguardando localização GPS...</p>
+
+  <h2>🏁 Para onde vamos?</h2>
+  <input id="destino" placeholder="Digite seu destino">
+
+  <button onclick="solicitar()">SOLICITAR VIAGEM</button>
+  <p id="status">Pronto para começar!</p>
+</div>
+
+<div class="card">
+  <h2>🗺️ Mapa em tempo real</h2>
+  <div id="map"></div>
+</div>
+
+</main>
+
+<footer>
+  Vem Comigo © 2026<br>
+  Cachoeirinha - RS
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const map = L.map('map').setView([-29.9511,-51.0939],13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap'
+}).addTo(map);
+
+let marcador = null;
+let latitude = null;
+let longitude = null;
+
+function localizar() {
+  const status = document.getElementById('status');
+
+  if (!navigator.geolocation) {
+    status.textContent = 'GPS não disponível neste navegador.';
+    return;
+  }
+
+  status.textContent = 'Buscando sua localização...';
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      latitude = pos.coords.latitude;
+      longitude = pos.coords.longitude;
+
+      map.setView([latitude,longitude],16);
+
+      if (marcador) map.removeLayer(marcador);
+
+      marcador = L.marker([latitude,longitude])
+        .addTo(map)
+        .bindPopup('Você está aqui!')
+        .openPopup();
+
+      document.getElementById('origem').textContent =
+        'Localização encontrada com GPS!';
+
+      status.textContent = 'GPS conectado!';
+    },
+    function() {
+      status.textContent =
+        'Não foi possível obter o GPS. Verifique as permissões.';
+    },
+    {enableHighAccuracy:true,timeout:15000}
+  );
+}
+
+function solicitar() {
+  const destino = document.getElementById('destino').value.trim();
+  const tipo = document.getElementById('tipo').value;
+  const veiculo = document.getElementById('veiculo').value;
+
+  if (latitude === null) {
+    alert('Primeiro encontre sua localização pelo GPS.');
+    return;
+  }
+
+  if (!destino) {
+    alert('Digite seu destino.');
+    return;
+  }
+
+  document.getElementById('status').textContent =
+    'Solicitação de teste preparada!';
+
+  alert(
+    'VEM COMIGO\\n' +
+    'Perfil: ' + tipo + '\\n' +
+    'Veículo: ' + veiculo + '\\n' +
+    'Destino: ' + destino + '\\n' +
+    'Localização GPS: ' + latitude + ', ' + longitude
+  );
+}
+</script>
+
+</body>
+</html>
