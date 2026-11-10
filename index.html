@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vem Comigo</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:white;font-family:Arial,sans-serif}
+header{background:#ffcc00;color:#111;padding:22px;text-align:center;font-size:27px;font-weight:bold}
+main{padding:20px;max-width:600px;margin:auto}
+h2{color:#ffcc00}
+.card{background:#202020;padding:18px;border-radius:14px;margin:15px 0}
+button{background:#ffcc00;color:#111;border:0;border-radius:10px;padding:15px;font-size:16px;font-weight:bold;width:100%;margin-top:12px}
+input{width:100%;padding:14px;border-radius:8px;border:1px solid #555;background:#303030;color:white;margin:8px 0}
+.opcoes{display:flex;gap:10px}
+.opcoes button{flex:1}
+#status{color:#ffcc00;margin-top:15px}
+small{color:#bbb}
+</style>
+</head>
+<body>
+<header>🚕 VEM COMIGO</header>
+<main>
+<div class="card">
+<h2>Para onde vamos?</h2>
+<p>Escolha seu transporte:</p>
+<div class="opcoes">
+<button onclick="veiculo='Carro';atualizar()">🚗 Carro</button>
+<button onclick="veiculo='Moto';atualizar()">🏍️ Moto</button>
+</div>
+<p id="escolha">Veículo: Carro</p>
+<input id="destino" placeholder="Digite seu destino">
+<button onclick="localizar()">📍 Usar minha localização</button>
+<button onclick="solicitar()">SOLICITAR VIAGEM</button>
+<p id="status">Aguardando localização...</p>
+</div>
+<div class="card">
+<h2>Vem Comigo</h2>
+<p>Seu transporte, com praticidade e segurança.</p>
+<small>Primeira versão de demonstração.</small>
+</div>
+</main>
+<script>
+let veiculo="Carro";
+let latitude=null;
+let longitude=null;
+
+function atualizar(){
+ document.getElementById("escolha").innerText="Veículo: "+veiculo;
+}
+
+function localizar(){
+ const status=document.getElementById("status");
+ if(!navigator.geolocation){
+  status.innerText="Seu aparelho não permite localização.";
+  return;
+ }
+ status.innerText="Buscando sua localização...";
+ navigator.geolocation.getCurrentPosition(
+  pos=>{
+   latitude=pos.coords.latitude;
+   longitude=pos.coords.longitude;
+   status.innerText="Localização encontrada! GPS ativado.";
+  },
+  ()=>status.innerText="Não foi possível obter localização. Autorize o GPS.",
+  {enableHighAccuracy:true}
+ );
+}
+
+function solicitar(){
+ const destino=document.getElementById("destino").value.trim();
+ const status=document.getElementById("status");
+ if(latitude===null){
+  status.innerText="Primeiro toque em Usar minha localização.";
+  return;
+ }
+ if(!destino){
+  status.innerText="Digite seu destino.";
+  return;
+ }
+ status.innerText="Pedido de demonstração preparado: "+veiculo+" até "+destino+".";
+}
+</script>
+</body>
+  </html>
+  
